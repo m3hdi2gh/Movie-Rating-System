@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*.pyo
+.venv
+venv
+.pytest_cache
+
+# IDE
+.idea
+.vscode
+
+# Environment
+.env
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Data files (will be mounted as volume)
+scripts/*.csv
+
+# Misc
+*.md
+*.log

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    container_name: moviedb
+    environment:
+      POSTGRES_DB: moviedb
+      POSTGRES_USER: movieuser
+      POSTGRES_PASSWORD: moviepass123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts:/scripts
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U movieuser -d moviedb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: movie-rating-app
+    environment:
+      DATABASE_URL: postgresql://movieuser:moviepass123@db:5432/moviedb
+      DEBUG: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./scripts:/app/scripts
+
+volumes:
+  pgdata:
