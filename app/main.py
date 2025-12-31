@@ -1,12 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.exceptions import (
-    AppException,
-    NotFoundException,
-    ValidationException,
-    BadRequestException,
-)
+from app.exceptions import AppException
 from app.controllers import movie_router
 
 app = FastAPI(
@@ -21,7 +16,7 @@ app = FastAPI(
 # =============================================================================
 
 @app.exception_handler(AppException)
-async def app_exception_handler(request: Request, exc: AppException):
+async def app_exception_handler(_request: Request, exc: AppException):
     """Handle all application exceptions."""
     return JSONResponse(
         status_code=exc.code,
@@ -36,7 +31,7 @@ async def app_exception_handler(request: Request, exc: AppException):
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
+async def general_exception_handler(_request: Request, _exc: Exception):
     """Handle unexpected exceptions."""
     return JSONResponse(
         status_code=500,

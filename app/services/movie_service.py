@@ -77,7 +77,8 @@ class MovieService:
             logger.error(f"Failed to fetch movie (movie_id={movie_id}): {str(e)}", exc_info=True)
             raise
 
-    def _calculate_average_rating(self, movie: Movie) -> Optional[float]:
+    @staticmethod
+    def _calculate_average_rating(movie: Movie) -> Optional[float]:
         """Calculate average rating for a movie."""
         if not movie.ratings:
             return None

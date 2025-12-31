@@ -2,13 +2,11 @@
 
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, status
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.services import MovieService, RatingService
 from app.schemas import RatingCreate
-from app.exceptions import ValidationException
 
 router = APIRouter()
 

@@ -16,9 +16,9 @@ class BaseRepository(Generic[ModelType]):
         self.model = model
         self.db = db
 
-    def get_by_id(self, id: int) -> Optional[ModelType]:
+    def get_by_id(self, item_id: int) -> Optional[ModelType]:
         """Get a single record by ID."""
-        return self.db.query(self.model).filter(self.model.id == id).first()
+        return self.db.query(self.model).filter(self.model.id == item_id).first()
 
     def get_all(
         self,
@@ -54,8 +54,7 @@ class BaseRepository(Generic[ModelType]):
         self.db.delete(db_obj)
         self.db.commit()
 
-    def exists(self, id: int) -> bool:
+    def exists(self, item_id: int) -> bool:
         """Check if a record exists by ID."""
-        return self.db.query(
-            self.db.query(self.model).filter(self.model.id == id).exists()
-        ).scalar()
+        result = self.db.query(self.model.id).filter(self.model.id == item_id).first()
+        return result is not None

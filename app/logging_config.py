@@ -15,12 +15,12 @@ def setup_logging(level: str = "INFO") -> logging.Logger:
         Configured logger instance
     """
     # Create logger
-    logger = logging.getLogger("movie_rating")
-    logger.setLevel(getattr(logging, level.upper(), logging.INFO))
+    app_logger = logging.getLogger("movie_rating")
+    app_logger.setLevel(getattr(logging, level.upper(), logging.INFO))
 
     # Avoid duplicate handlers
-    if logger.handlers:
-        return logger
+    if app_logger.handlers:
+        return app_logger
 
     # Create console handler
     handler = logging.StreamHandler(sys.stdout)
@@ -34,9 +34,9 @@ def setup_logging(level: str = "INFO") -> logging.Logger:
     handler.setFormatter(formatter)
 
     # Add handler to logger
-    logger.addHandler(handler)
+    app_logger.addHandler(handler)
 
-    return logger
+    return app_logger
 
 
 # Global logger instance
