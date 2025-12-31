@@ -1,5 +1,9 @@
 """Service layer - Business logic."""
 
-# Services will be added here as they are implemented
+from app.services.movie_service import MovieService
+from app.services.rating_service import RatingService
 
-__all__ = []
+__all__ = [
+    "MovieService",
+    "RatingService",
+]
