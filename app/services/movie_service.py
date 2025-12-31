@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models import Movie
 from app.repositories import MovieRepository
 from app.exceptions import NotFoundException
+from app.logging_config import logger
 
 
 class MovieService:
@@ -27,27 +28,54 @@ class MovieService:
         Get paginated list of movies with optional filters.
         Returns tuple of (movie_list, total_count).
         """
-        movies, total_count = self.movie_repo.get_movies_paginated(
-            page=page,
-            page_size=page_size,
-            title=title,
-            release_year=release_year,
-            genre=genre,
+        # Log start of operation
+        logger.info(
+            f"Fetching movies list (page={page}, page_size={page_size}, "
+            f"title={title}, release_year={release_year}, genre={genre})"
         )
 
-        # Transform to response format
-        movie_list = [self._to_list_item(movie) for movie in movies]
-        return movie_list, total_count
+        try:
+            movies, total_count = self.movie_repo.get_movies_paginated(
+                page=page,
+                page_size=page_size,
+                title=title,
+                release_year=release_year,
+                genre=genre,
+            )
+
+            # Transform to response format
+            movie_list = [self._to_list_item(movie) for movie in movies]
+
+            # Log success
+            logger.info(f"Returned {len(movie_list)} movies (total: {total_count})")
+
+            return movie_list, total_count
+
+        except Exception as e:
+            logger.error(f"Failed to fetch movies: {str(e)}", exc_info=True)
+            raise
 
     def get_movie_by_id(self, movie_id: int) -> dict:
         """
         Get movie details by ID.
         Raises NotFoundException if not found.
         """
-        movie = self.movie_repo.get_by_id(movie_id)
-        if not movie:
-            raise NotFoundException(message="Movie not found")
-        return self._to_detail(movie)
+        logger.info(f"Fetching movie details (movie_id={movie_id})")
+
+        try:
+            movie = self.movie_repo.get_by_id(movie_id)
+            if not movie:
+                logger.warning(f"Movie not found (movie_id={movie_id})")
+                raise NotFoundException(message="Movie not found")
+
+            logger.info(f"Movie found: {movie.title} (movie_id={movie_id})")
+            return self._to_detail(movie)
+
+        except NotFoundException:
+            raise
+        except Exception as e:
+            logger.error(f"Failed to fetch movie (movie_id={movie_id}): {str(e)}", exc_info=True)
+            raise
 
     def _calculate_average_rating(self, movie: Movie) -> Optional[float]:
         """Calculate average rating for a movie."""
