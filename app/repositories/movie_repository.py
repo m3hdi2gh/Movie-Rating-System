@@ -61,3 +61,42 @@ class MovieRepository:
         """Check if a movie exists by ID."""
         result = self.db.query(Movie.id).filter(Movie.id == movie_id).first()
         return result is not None
+
+    def create(self, data: dict) -> Movie:
+        """Create a new movie."""
+        movie = Movie(
+            title=data["title"],
+            director_id=data["director_id"],
+            release_year=data.get("release_year"),
+            cast=data.get("cast"),
+        )
+        self.db.add(movie)
+        self.db.commit()
+        self.db.refresh(movie)
+        return movie
+
+    def update(self, movie: Movie, data: dict) -> Movie:
+        """Update an existing movie."""
+        if "title" in data and data["title"] is not None:
+            movie.title = data["title"]
+        if "director_id" in data and data["director_id"] is not None:
+            movie.director_id = data["director_id"]
+        if "release_year" in data:
+            movie.release_year = data["release_year"]
+        if "cast" in data:
+            movie.cast = data["cast"]
+
+        self.db.commit()
+        self.db.refresh(movie)
+        return movie
+
+    def delete(self, movie: Movie) -> None:
+        """Delete a movie."""
+        self.db.delete(movie)
+        self.db.commit()
+
+    def sync_genres(self, movie: Movie, genres: List[Genre]) -> None:
+        """Sync movie genres (replace existing with new ones)."""
+        movie.genres = genres
+        self.db.commit()
+        self.db.refresh(movie)
